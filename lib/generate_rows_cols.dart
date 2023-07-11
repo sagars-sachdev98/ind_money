@@ -11,8 +11,8 @@ class GenerateRowsCols extends StatefulWidget {
 
 class _GenerateRowsColsState extends State<GenerateRowsCols> {
   List<Container> containers = [];
-  int noOfRows = 4;
-  int noOfCols = 5;
+  int? noOfRows;
+  int? noOfCols;
   int? randomNumberForP;
   int? randomNumberForG;
   generateRowsCols(int noOfRows, int noOfCols) {
@@ -21,6 +21,10 @@ class _GenerateRowsColsState extends State<GenerateRowsCols> {
     Random random = Random();
     randomNumberForP = random.nextInt(temp);
     randomNumberForG = random.nextInt(temp);
+    print(randomNumberForG! / 4); //row
+    print(randomNumberForP! / 4); // row
+    print(randomNumberForG! / 5); // col
+    print(randomNumberForP! / 5); //col
     List.generate(
         temp,
         (index) => containers.add(Container(
@@ -46,26 +50,58 @@ class _GenerateRowsColsState extends State<GenerateRowsCols> {
     setState(() {});
   }
 
-  @override
-  void initState() {
-    generateRowsCols(noOfRows, noOfCols);
-    super.initState();
-  }
+  // @override
+  // void initState() {
+  //   generateRowsCols(noOfRows, noOfCols);
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-              child: GridView.count(
-                  crossAxisCount: noOfRows, children: containers)),
-          ElevatedButton(
-              onPressed: () {
-                generateRowsCols(noOfRows, noOfCols);
-              },
-              child: const Text("Change Postions"))
-        ],
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                  onChanged: (value) {
+                    if (value != "") {
+                      noOfRows = int.parse(value);
+                    }
+                  },
+                  decoration: const InputDecoration(hintText: "No of Rows")),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+                  onChanged: (value) {
+                    if (value != "") {
+                      noOfCols = int.parse(value);
+                    }
+                  },
+                  decoration: const InputDecoration(hintText: "No of Cols")),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  generateRowsCols(noOfRows!, noOfCols!);
+                },
+                child: const Text("Generate")),
+            containers.isNotEmpty
+                ? Expanded(
+                    child: GridView.count(
+                        crossAxisCount: noOfRows!, children: containers))
+                : const Offstage(),
+            containers.isNotEmpty
+                ? ElevatedButton(
+                    onPressed: () {
+                      generateRowsCols(noOfRows!, noOfCols!);
+                    },
+                    child: const Text("Change Postions"))
+                : const Offstage()
+          ],
+        ),
       ),
     );
   }
